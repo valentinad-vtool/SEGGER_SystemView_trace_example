@@ -42,7 +42,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       SystemView version: 3.30                                    *
+*       SystemView version: 3.32                                    *
 *                                                                    *
 **********************************************************************
 -------------------------- END-OF-HEADER -----------------------------
@@ -86,6 +86,7 @@ Additional information:
 
 	void SEGGER_UART_init(U32 baud);
 #endif
+
 
 #endif  // SEGGER_SYSVIEW_CONF_H
 

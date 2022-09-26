@@ -42,13 +42,13 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       SystemView version: 3.30                                    *
+*       SystemView version: 3.32                                    *
 *                                                                    *
 **********************************************************************
 -------------------------- END-OF-HEADER -----------------------------
 File    : SEGGER_SYSVIEW.h
 Purpose : System visualization API.
-Revision: $Rev: 21292 $
+Revision: $Rev: 26226 $
 */
 
 #ifndef SEGGER_SYSVIEW_H
@@ -77,8 +77,8 @@ extern "C" {
 */
 
 #define SEGGER_SYSVIEW_MAJOR          3
-#define SEGGER_SYSVIEW_MINOR          30 //changed
-#define SEGGER_SYSVIEW_REV            2  // changed by me
+#define SEGGER_SYSVIEW_MINOR          32
+#define SEGGER_SYSVIEW_REV            0
 #define SEGGER_SYSVIEW_VERSION        ((SEGGER_SYSVIEW_MAJOR * 10000) + (SEGGER_SYSVIEW_MINOR * 100) + SEGGER_SYSVIEW_REV)
 
 #define SEGGER_SYSVIEW_INFO_SIZE      9   // Minimum size, which has to be reserved for a packet. 1-2 byte of message type, 0-2  byte of payload length, 1-5 bytes of timestamp.

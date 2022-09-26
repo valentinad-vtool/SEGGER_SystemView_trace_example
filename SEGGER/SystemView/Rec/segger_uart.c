@@ -304,7 +304,7 @@ void DEMO_LPUART_IRQHandler(void)
         r = _cbOnTx(&v);
         if (r == 0) 			// No more characters to send ?
         {
-        	LPUART_DisableInterrupts(DEMO_LPUART, kLPUART_TxDataRegEmptyInterruptEnable);
+        	LPUART_DisableInterrupts(DEMO_LPUART, kLPUART_TxDataRegEmptyInterruptEnable); // Disable further tx interrupts
         } else
         {
         	while((kLPUART_TransmissionCompleteFlag & LPUART_GetStatusFlags(DEMO_LPUART)) == 0); // Makes sure that "transmission complete" flag in USART_SR is reset to 0 as soon as we write USART_DR.
@@ -404,10 +404,10 @@ void HIF_UART_Init(uint32_t Baudrate, UART_ON_TX_FUNC_P cbOnTx, UART_ON_RX_FUNC_
   LPUART_Init(DEMO_LPUART, &config, DEMO_LPUART_CLK_FREQ);
 
   /* Send g_tipString out. */
-  if(LPUART_WriteBlocking(DEMO_LPUART, g_tipString, sizeof(g_tipString) / sizeof(g_tipString[0])) != kStatus_Success)
-	  PRINTF("ERROR with UART2!.\r\n");
-  else
-	  PRINTF("UART2 is good!\r\n");
+//  if(LPUART_WriteBlocking(DEMO_LPUART, g_tipString, sizeof(g_tipString) / sizeof(g_tipString[0])) != kStatus_Success)
+//	  PRINTF("ERROR with UART2!.\r\n");
+//  else
+//	  PRINTF("UART2 is good!\r\n");
 #endif
   //
   // Setup callbacks which are called by ISR handler and enable interrupt in NVIC

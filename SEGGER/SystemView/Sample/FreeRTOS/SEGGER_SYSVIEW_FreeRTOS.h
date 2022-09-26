@@ -42,13 +42,14 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       SystemView version: 3.30                                    *
+*       SystemView version: 3.32                                    *
 *                                                                    *
 **********************************************************************
 -------------------------- END-OF-HEADER -----------------------------
 
 File    : SEGGER_SYSVIEW_FreeRTOS.h
 Purpose : Interface between FreeRTOS and SystemView.
+          Tested with FreeRTOS V10.0.0
 Revision: $Rev: 7745 $
 
 Notes:
@@ -192,22 +193,19 @@ Notes:
 #define apiID_XSTREAMBUFFERRECEIVE                (110u)
 #define apiID_XSTREAMBUFFERRECEIVEFROMISR         (111u)
 
-#define traceSTART()                                                            SEGGER_SYSVIEW_Conf()
-
-#define traceTASK_NOTIFY_TAKE(uxIndexToWait)                                    SEGGER_SYSVIEW_RecordU32x2(apiID_OFFSET + apiID_ULTASKNOTIFYTAKE, xClearCountOnExit, xTicksToWait)
+#define traceTASK_NOTIFY_TAKE()                                                 SEGGER_SYSVIEW_RecordU32x2(apiID_OFFSET + apiID_ULTASKNOTIFYTAKE, xClearCountOnExit, xTicksToWait)
 #define traceTASK_DELAY()                                                       SEGGER_SYSVIEW_RecordU32  (apiID_OFFSET + apiID_VTASKDELAY, xTicksToDelay)
 #define traceTASK_DELAY_UNTIL(xTimeToWake)                                      SEGGER_SYSVIEW_RecordVoid (apiID_OFFSET + apiID_VTASKDELAYUNTIL)
-#define traceTASK_NOTIFY_GIVE_FROM_ISR(uxIndexToNotify)                         SEGGER_SYSVIEW_RecordU32x2(apiID_OFFSET + apiID_VTASKNOTIFYGIVEFROMISR, SEGGER_SYSVIEW_ShrinkId((U32)pxTCB), (U32)pxHigherPriorityTaskWoken)
-
+#define traceTASK_NOTIFY_GIVE_FROM_ISR()                                        SEGGER_SYSVIEW_RecordU32x2(apiID_OFFSET + apiID_VTASKNOTIFYGIVEFROMISR, SEGGER_SYSVIEW_ShrinkId((U32)pxTCB), (U32)pxHigherPriorityTaskWoken)
 #define traceTASK_PRIORITY_INHERIT( pxTCB, uxPriority )                         SEGGER_SYSVIEW_RecordU32  (apiID_OFFSET + apiID_VTASKPRIORITYINHERIT, (U32)pxMutexHolder)
 #define traceTASK_RESUME( pxTCB )                                               SEGGER_SYSVIEW_RecordU32  (apiID_OFFSET + apiID_VTASKRESUME, SEGGER_SYSVIEW_ShrinkId((U32)pxTCB))
 #define traceINCREASE_TICK_COUNT( xTicksToJump )                                SEGGER_SYSVIEW_RecordU32  (apiID_OFFSET + apiID_VTASKSTEPTICK, xTicksToJump)
 #define traceTASK_SUSPEND( pxTCB )                                              SEGGER_SYSVIEW_RecordU32  (apiID_OFFSET + apiID_VTASKSUSPEND, SEGGER_SYSVIEW_ShrinkId((U32)pxTCB))
 #define traceTASK_PRIORITY_DISINHERIT( pxTCB, uxBasePriority )                  SEGGER_SYSVIEW_RecordU32  (apiID_OFFSET + apiID_XTASKPRIORITYDISINHERIT, (U32)pxMutexHolder)
 #define traceTASK_RESUME_FROM_ISR( pxTCB )                                      SEGGER_SYSVIEW_RecordU32  (apiID_OFFSET + apiID_XTASKRESUMEFROMISR, SEGGER_SYSVIEW_ShrinkId((U32)pxTCB))
-#define traceTASK_NOTIFY(uxIndexToNotify)                                       SEGGER_SYSVIEW_RecordU32x4(apiID_OFFSET + apiID_XTASKGENERICNOTIFY, SEGGER_SYSVIEW_ShrinkId((U32)pxTCB), ulValue, eAction, (U32)pulPreviousNotificationValue)
-#define traceTASK_NOTIFY_FROM_ISR(uxIndexToWait)                                SEGGER_SYSVIEW_RecordU32x5(apiID_OFFSET + apiID_XTASKGENERICNOTIFYFROMISR, SEGGER_SYSVIEW_ShrinkId((U32)pxTCB), ulValue, eAction, (U32)pulPreviousNotificationValue, (U32)pxHigherPriorityTaskWoken)
-#define traceTASK_NOTIFY_WAIT(uxIndexToWait)                                    SEGGER_SYSVIEW_RecordU32x4(apiID_OFFSET + apiID_XTASKNOTIFYWAIT, ulBitsToClearOnEntry, ulBitsToClearOnExit, (U32)pulNotificationValue, xTicksToWait)
+#define traceTASK_NOTIFY()                                                      SEGGER_SYSVIEW_RecordU32x4(apiID_OFFSET + apiID_XTASKGENERICNOTIFY, SEGGER_SYSVIEW_ShrinkId((U32)pxTCB), ulValue, eAction, (U32)pulPreviousNotificationValue)
+#define traceTASK_NOTIFY_FROM_ISR()                                             SEGGER_SYSVIEW_RecordU32x5(apiID_OFFSET + apiID_XTASKGENERICNOTIFYFROMISR, SEGGER_SYSVIEW_ShrinkId((U32)pxTCB), ulValue, eAction, (U32)pulPreviousNotificationValue, (U32)pxHigherPriorityTaskWoken)
+#define traceTASK_NOTIFY_WAIT()                                                 SEGGER_SYSVIEW_RecordU32x4(apiID_OFFSET + apiID_XTASKNOTIFYWAIT, ulBitsToClearOnEntry, ulBitsToClearOnExit, (U32)pulNotificationValue, xTicksToWait)
 
 #define traceQUEUE_CREATE( pxNewQueue )                                         SEGGER_SYSVIEW_RecordU32x3(apiID_OFFSET + apiID_XQUEUEGENERICCREATE, uxQueueLength, uxItemSize, ucQueueType)
 #define traceQUEUE_DELETE( pxQueue )                                            SEGGER_SYSVIEW_RecordU32  (apiID_OFFSET + apiID_VQUEUEDELETE, SEGGER_SYSVIEW_ShrinkId((U32)pxQueue))
@@ -299,7 +297,7 @@ Notes:
 #endif
 
 #define traceMOVED_TASK_TO_READY_STATE(pxTCB)       SEGGER_SYSVIEW_OnTaskStartReady((U32)pxTCB)
-#define traceREADDED_TASK_TO_READY_STATE(pxTCB)
+#define traceREADDED_TASK_TO_READY_STATE(pxTCB)     
 
 #define traceMOVED_TASK_TO_DELAYED_LIST()           SEGGER_SYSVIEW_OnTaskStopReady((U32)pxCurrentTCB,  (1u << 2))
 #define traceMOVED_TASK_TO_OVERFLOW_DELAYED_LIST()  SEGGER_SYSVIEW_OnTaskStopReady((U32)pxCurrentTCB,  (1u << 2))
