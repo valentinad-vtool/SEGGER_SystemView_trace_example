@@ -166,10 +166,10 @@ static void _cbOnUARTRx(U8 Data) {
     _SVInfo.NumBytesHelloRcvd++;
     goto Done;
   }
-  _StartSysView();
   SEGGER_RTT_WriteDownBuffer(_SVInfo.ChannelID, &Data, 1);  // Write data into corresponding RTT buffer for application to read and handle accordingly
-Done:
-  return;
+  _StartSysView();
+  Done:
+    return;
 }
 
 static int _cbOnUARTTx(U8* pChar) {
@@ -268,20 +268,18 @@ void USART2_IRQHandler(void) {
 
 void DEMO_LPUART_IRQHandler(void)
 {
-	int UsartStatus;
+	uint32_t UsartStatus = LPUART_GetStatusFlags(DEMO_LPUART);
 	uint8_t v;
 	int r;
 
     /* If new data arrived. */
-    if ((kLPUART_RxDataRegFullFlag)&LPUART_GetStatusFlags(DEMO_LPUART))				// Data received?
+    if ((kLPUART_RxDataRegFullFlag) & UsartStatus)				// Data received?
     {
         v = LPUART_ReadByte(DEMO_LPUART);										// Read data
 
-        if((kLPUART_RxOverrunFlag)&LPUART_GetStatusFlags(DEMO_LPUART) ||
-        		(kLPUART_NoiseErrorFlag)&LPUART_GetStatusFlags(DEMO_LPUART) ||
-    			(kLPUART_FramingErrorFlag)&LPUART_GetStatusFlags(DEMO_LPUART) ||
-    			(kLPUART_ParityErrorFlag)&LPUART_GetStatusFlags(DEMO_LPUART) ||
-    			(kLPUART_LinBreakFlag)&LPUART_GetStatusFlags(DEMO_LPUART))
+
+        if(((kLPUART_RxOverrunFlag | kLPUART_NoiseErrorFlag | kLPUART_FramingErrorFlag |
+        		kLPUART_ParityErrorFlag) & UsartStatus) == 0)
         {   																		// Only process data if no error occurred
         	(void)v;                                         						// Avoid warning in BTL
             if(_cbOnRx)
@@ -291,10 +289,10 @@ void DEMO_LPUART_IRQHandler(void)
         }
     }
 
-    if((kLPUART_TxDataRegEmptyFlag)&LPUART_GetStatusFlags(DEMO_LPUART))	// Tx (data register) empty? => Send next character Note: Shift register may still hold a character that has not been sent yet.
+    if((kLPUART_TxDataRegEmptyFlag) & UsartStatus)	// Tx (data register) empty? => Send next character Note: Shift register may still hold a character that has not been sent yet.
     {	//
         // Under special circumstances, (old) BTL of Flasher does not wait until a complete string has been sent via UART,
-        // so there might be an TxE interrupt pending *before* the FW had a chance to set the callbacks accordingly which would result in a NULL-pointer call...
+        // so there might be an TxE interru_SVInfopt pending *before* the FW had a chance to set the callbacks accordingly which would result in a NULL-pointer call...
         // Therefore, we need to check if the function pointer is valid.
         //
         if (_cbOnTx == NULL) 	// No callback set? => Nothing to do...

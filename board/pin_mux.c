@@ -66,10 +66,10 @@ void BOARD_InitPins(void) {
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
 	  IOMUXC_GPIO_DISP_B2_11_LPUART2_RXD,          /* GPIO_DISP_B2_11 is configured as LPUART2_RXD */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+      1U);                                    /* Software Input On Field: Force input path of pad GPIO_DISP_B2 */
   IOMUXC_SetPinConfig(
 	  IOMUXC_GPIO_DISP_B2_10_LPUART2_TXD,          /* GPIO_DISP_B2_10 PAD functional properties : */
-      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
+      0x03U);                                 /* Slew Rate Field: Fast Slew Rate
                                                  Drive Strength Field: high drive strength
                                                  Pull / Keep Select Field: Pull Disable, Highz
                                                  Pull Up / Down Config. Field: Weak pull down
@@ -78,7 +78,7 @@ void BOARD_InitPins(void) {
                                                  Domain write protection lock: Neither of DWP bits is locked */
   IOMUXC_SetPinConfig(
 	  IOMUXC_GPIO_DISP_B2_11_LPUART2_RXD,          /* GPIO_DISP_B2_11 PAD functional properties : */
-      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
+      0x03U);                                 /* Slew Rate Field: Fast Slew Rate
                                                  Drive Strength Field: high drive strength
                                                  Pull / Keep Select Field: Pull Disable, Highz
                                                  Pull Up / Down Config. Field: Weak pull down

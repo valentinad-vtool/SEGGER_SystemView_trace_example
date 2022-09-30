@@ -1,5 +1,5 @@
 diff -rupN org/Source/include/FreeRTOS.h new/Source/include/FreeRTOS.h
---- freertos/freertos_kernel/include/FreeRTOS.h	2017-11-28 13:48:34.000000000 -0800
+--- include/FreeRTOS.h	2017-11-28 13:48:34.000000000 -0800
 +++ new/freertos/freertos_kernel/include/FreeRTOS.h	2017-12-11 00:54:49.522222000 -0800
 @@ -157,6 +157,10 @@ extern "C" {
  	#define INCLUDE_uxTaskGetStackHighWaterMark 0
@@ -56,7 +56,7 @@ diff -rupN org/Source/include/FreeRTOS.h new/Source/include/FreeRTOS.h
  	#define traceSTREAM_BUFFER_CREATE_FAILED( xIsMessageBuffer )
  #endif
 diff -rupN org/Source/include/task.h new/Source/include/task.h
---- freertos/freertos_kernel/include/task.h	2017-11-28 13:48:34.000000000 -0800
+--- include/task.h	2017-11-28 13:48:34.000000000 -0800
 +++ new/Source/include/task.h	2017-12-11 00:56:29.783423000 -0800
 @@ -1422,6 +1422,25 @@ TaskHandle_t xTaskGetHandle( const char
   */
@@ -85,7 +85,7 @@ diff -rupN org/Source/include/task.h new/Source/include/task.h
  FreeRTOS.h.  When this is done TaskHookFunction_t will not yet have been defined,
  so the following two prototypes will cause a compilation error.  This can be
 diff -rupN org/Source/portable/GCC/ARM_CM0/port.c new/Source/portable/GCC/ARM_CM0/port.c
---- org/Source/portable/GCC/ARM_CM0/port.c	2017-11-28 13:48:34.000000000 -0800
+--- portable/GCC/ARM_CM0/port.c	2017-11-28 13:48:34.000000000 -0800
 +++ new/Source/portable/GCC/ARM_CM0/port.c	2017-12-11 01:11:45.061429000 -0800
 @@ -333,13 +333,19 @@ void xPortSysTickHandler( void )
  uint32_t ulPreviousMask;
@@ -108,7 +108,7 @@ diff -rupN org/Source/portable/GCC/ARM_CM0/port.c new/Source/portable/GCC/ARM_CM
  	portCLEAR_INTERRUPT_MASK_FROM_ISR( ulPreviousMask );
  }
 diff -rupN org/Source/portable/GCC/ARM_CM0/portmacro.h new/Source/portable/GCC/ARM_CM0/portmacro.h
---- org/Source/portable/GCC/ARM_CM0/portmacro.h	2017-11-28 13:48:34.000000000 -0800
+--- portable/GCC/ARM_CM0/portmacro.h	2017-11-28 13:48:34.000000000 -0800
 +++ new/Source/portable/GCC/ARM_CM0/portmacro.h	2017-12-11 01:10:27.732228000 -0800
 @@ -82,7 +82,7 @@ extern void vPortYield( void );
  #define portNVIC_INT_CTRL_REG		( * ( ( volatile uint32_t * ) 0xe000ed04 ) )
@@ -117,10 +117,10 @@ diff -rupN org/Source/portable/GCC/ARM_CM0/portmacro.h new/Source/portable/GCC/A
 -#define portEND_SWITCHING_ISR( xSwitchRequired ) if( xSwitchRequired ) portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT
 +#define portEND_SWITCHING_ISR( xSwitchRequired ) { if( xSwitchRequired ) { traceISR_EXIT_TO_SCHEDULER(); portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT; } else { traceISR_EXIT(); } }
  #define portYIELD_FROM_ISR( x ) portEND_SWITCHING_ISR( x )
- /*-----------------------------------------------------------*/
+ /*-----------------------------------------------------------*/ freertos/freertos_kernel/
  
 diff -rupN org/Source/portable/GCC/ARM_CM3/port.c new/Source/portable/GCC/ARM_CM3/port.c
---- org/Source/portable/GCC/ARM_CM3/port.c	2017-11-28 13:48:34.000000000 -0800
+--- portable/GCC/ARM_CM3/port.c	2017-11-28 13:48:34.000000000 -0800
 +++ new/Source/portable/GCC/ARM_CM3/port.c	2017-12-11 01:14:50.515630000 -0800
 @@ -431,14 +431,20 @@ void xPortSysTickHandler( void )
  	save and then restore the interrupt mask value as its value is already
@@ -144,7 +144,7 @@ diff -rupN org/Source/portable/GCC/ARM_CM3/port.c new/Source/portable/GCC/ARM_CM
  	portENABLE_INTERRUPTS();
  }
 diff -rupN org/Source/portable/GCC/ARM_CM3/portmacro.h new/Source/portable/GCC/ARM_CM3/portmacro.h
---- org/Source/portable/GCC/ARM_CM3/portmacro.h	2017-11-28 13:48:34.000000000 -0800
+--- portable/GCC/ARM_CM3/portmacro.h	2017-11-28 13:48:34.000000000 -0800
 +++ new/Source/portable/GCC/ARM_CM3/portmacro.h	2017-12-11 01:13:36.868029000 -0800
 @@ -90,7 +90,7 @@ typedef unsigned long UBaseType_t;
  
@@ -156,7 +156,7 @@ diff -rupN org/Source/portable/GCC/ARM_CM3/portmacro.h new/Source/portable/GCC/A
  /*-----------------------------------------------------------*/
  
 diff -rupN org/Source/portable/GCC/ARM_CM4F/port.c new/Source/portable/GCC/ARM_CM4F/port.c
---- freertos/freertos_kernel/portable/GCC/ARM_CM4F/port.c	2017-11-28 13:48:34.000000000 -0800
+--- portable/GCC/ARM_CM4F/port.c	2017-11-28 13:48:34.000000000 -0800
 +++ new/freertos/freertos_kernel/portable/GCC/ARM_CM4F/port.c	2017-12-11 01:16:01.771230000 -0800
 @@ -493,14 +493,20 @@ void xPortSysTickHandler( void )
  	save and then restore the interrupt mask value as its value is already
@@ -180,7 +180,7 @@ diff -rupN org/Source/portable/GCC/ARM_CM4F/port.c new/Source/portable/GCC/ARM_C
  	portENABLE_INTERRUPTS();
  }
 diff -rupN org/Source/portable/GCC/ARM_CM4F/portmacro.h new/Source/portable/GCC/ARM_CM4F/portmacro.h
---- freertos/freertos_kernel/portable/GCC/ARM_CM4F/portmacro.h	2017-11-28 13:48:34.000000000 -0800
+--- portable/GCC/ARM_CM4F/portmacro.h	2017-11-28 13:48:34.000000000 -0800
 +++ new/freertos/freertos_kernel/portable/GCC/ARM_CM4F/portmacro.h	2017-12-11 01:15:16.546830000 -0800
 @@ -90,7 +90,7 @@ typedef unsigned long UBaseType_t;
  
@@ -192,7 +192,7 @@ diff -rupN org/Source/portable/GCC/ARM_CM4F/portmacro.h new/Source/portable/GCC/
  /*-----------------------------------------------------------*/
  
 diff -rupN org/Source/tasks.c new/Source/tasks.c
---- freertos/freertos_kernel/tasks.c	2017-11-28 13:48:34.000000000 -0800
+--- tasks.c									2017-11-28 13:48:34.000000000 -0800
 +++ new/freertos/freertos_kernel/tasks.c	2017-12-11 01:08:48.591428000 -0800
 @@ -237,6 +237,17 @@ count overflows. */
  	taskRECORD_READY_PRIORITY( ( pxTCB )->uxPriority );												\
