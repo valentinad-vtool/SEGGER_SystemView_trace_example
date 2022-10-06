@@ -1,0 +1,20 @@
+	
+						SystemView with MCU configuration!
+				
+1. Add FreeRTOS library to your project and check the version of it (just open any FreeRTOS file and, in comments, you can find version displayed). Check this site and see how steps for FreeRTOS and SEGGER should look like: https://wiki.segger.com/FreeRTOS_with_SystemView#System_Configuration
+2. Run application(add one task and start scheduler) only with FreeRTOS and check if it's working correctly!
+3. When FreeRTOS is checked and verifyied, download from SEGGER site SystemView library for MCU : https://www.segger.com/downloads/systemview/ . It is in part: SystemView, Target Sources. Download THE SAME version of SEGGER SystemView for MCU as you downloaded SEGGER SV(SystemView) application run on host(deppending on OS, you can download Windows,Linux or macOS  SV app).
+4. Make directory called "SEGGER" in you project where you have put your root directory of FreeRTOS library(root directories of both libraries should be in the same level).
+5. Add/extract directories called "Config", "Sample" and "SEGGER" in zipped file and everything what is in them in your "SEGGER" directory.
+6. Go to extracted directory "Sample". Find which version of OS you used in your application on MCU and ONLY LEAVE that one subdirectory in "Sample" directory( in my case it was directory called FreeRTOSV10, because I had version of FreeRTOS installed v10.3.0, so i leaved only that directory and others deleted).
+7. Check again this site https://wiki.segger.com/FreeRTOS_with_SystemView#System_Configuration and part for "System Configuration". You have to add in your Project path includes to your freshly added SEGGER library. You have to right click on project name and click "Properties". Go to C/C++ General->Path and Symbols->Includes->GNU C. Add path to extracted directories in your SEGGER directory:
+				   1. /root_of_FreeRTOS_and_SEGGER/SEGGER/Config
+				   2. /root_of_FreeRTOS_and_SEGGER/SEGGER/Sample
+				   3. /root_of_FreeRTOS_and_SEGGER/SEGGER/Sample/FreeRTOSV10 (this is in my case, in yours can be different!)
+				   4. /root_of_FreeRTOS_and_SEGGER/SEGGER/SEGGER
+8. At the end of FreeRTOSConfig.h add #include "SEGGER_SYSVIEW_FreeRTOS.h" (I put it  before macro __NVIC_PRIO_BITS).
+ - Troubleshooting: If you are working with ST microcontrollers, STM32CubeIDE can generate you a FreeRTOS code with SysTick_Handler() function called in stm32xxxx_it.c file and you can get compiler errors for predefinition of that function. Just comment that function in that file and add #define xPortSysTickHandler SysTick_Handler in your FreeRTOSConfig.h file. Build system again and it should fix your problem.
+10. Apply patch for FreeRTOS got in SEGGER SystemView library. Patch is on path root_of_SEGGER/Sample/Patch/ and inside is a FreeRTOSV10_Core.patch file, in my case. Copy this patch file in directory where are "include" and  "portable" directories of FreeRTOS library. 
+		1. On linux use command patch -p1 -r . < FreeRTOSV10_Core.patch 
+		2. On windows, use git tool or patch manually 
+ - Troubleshooting: 				   
