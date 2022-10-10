@@ -19,7 +19,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-//#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -49,7 +48,6 @@ static void MX_USB_OTG_FS_PCD_Init(void);
 static void MX_USART2_UART_Init(void);
 void StartDefaultTask(void *argument);
 
-
 /* Private user code ---------------------------------------------------------*/
 
 /**
@@ -78,7 +76,7 @@ int main(void)
   MX_USART2_UART_Init();
 
   //SEGGER init uart & his interrupt
-  SEGGER_UART_init(500000,&huart2);
+  SEGGER_UART_init(USART2,500000,USART2_IRQn);
   SEGGER_SYSVIEW_Conf();
 
   ARM_CM_DEMCR      |= 1 << 24;  // Set bit 24(TRCENA)
@@ -292,7 +290,6 @@ static void task1_handler(void* parameters)
 	while(1)
 	{
 		snprintf(msg,100,"%s\n", (char*)parameters);
-//		HAL_UART_Transmit(&huart2, "Hello from task 1!\n\r", sizeof("Hello from task 1!\n\r"), 500);
 		HAL_Delay(500);
 		SEGGER_SYSVIEW_PrintfTarget(msg);
 		taskYIELD();
@@ -300,13 +297,11 @@ static void task1_handler(void* parameters)
 
 }
 
-
 static void task2_handler(void* parameters)
 {
 	char msg[100];
 	while(1)
 	{
-
 		snprintf(msg,100,"%s\n", (char*)parameters);
 		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 		HAL_Delay(500);

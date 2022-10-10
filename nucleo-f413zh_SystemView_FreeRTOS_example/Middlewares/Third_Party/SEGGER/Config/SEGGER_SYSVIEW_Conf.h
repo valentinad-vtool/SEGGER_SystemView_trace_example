@@ -78,16 +78,10 @@ Additional information:
 * TODO: Add your defines here.                                       *
 **********************************************************************
 */
-
-#define SEGGER_UART_REC 1
-
-#if (SEGGER_UART_REC == 1)
-	extern void HIF_UART_EnableTXEInterrupt  (void);
-	#define SEGGER_SYSVIEW_ON_EVENT_RECORDED(x)  HIF_UART_EnableTXEInterrupt()
-
-	void SEGGER_UART_init(U32 baud, UART_HandleTypeDef * huart);
-
-#endif
+extern void SEGGER_UARTX_IRQHandler(void);
+extern void HIF_UART_EnableTXEInterrupt  (void);
+#define SEGGER_SYSVIEW_ON_EVENT_RECORDED(x)  HIF_UART_EnableTXEInterrupt()
+void SEGGER_UART_init(USART_TypeDef * instance, U32 baud, U32 intNum);
 
 #endif  // SEGGER_SYSVIEW_CONF_H
 

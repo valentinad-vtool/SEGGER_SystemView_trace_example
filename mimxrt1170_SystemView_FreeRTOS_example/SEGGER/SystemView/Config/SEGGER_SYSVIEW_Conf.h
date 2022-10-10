@@ -73,19 +73,16 @@ Additional information:
 *
 **********************************************************************
 */
-
+#include "MIMXRT1176_cm7.h" //change this to your board
 /*********************************************************************
 * TODO: Add your defines here.                                       *
 **********************************************************************
 */
-#define SEGGER_UART_REC 1
+extern void SEGGER_UARTX_IRQHandler(void);
+extern void HIF_UART_EnableTXEInterrupt  (void);
+#define SEGGER_SYSVIEW_ON_EVENT_RECORDED(x)  HIF_UART_EnableTXEInterrupt()
 
-#if (SEGGER_UART_REC == 1)
-	extern void HIF_UART_EnableTXEInterrupt  (void);
-	#define SEGGER_SYSVIEW_ON_EVENT_RECORDED(x)  HIF_UART_EnableTXEInterrupt()
-
-	void SEGGER_UART_init(U32 baud);
-#endif
+void SEGGER_UART_init(U32 baud);
 
 
 #endif  // SEGGER_SYSVIEW_CONF_H

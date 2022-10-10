@@ -93,15 +93,7 @@ int main(void)
         while (1)
             ;
     }
-//    timerHndl = xTimerCreate(
-//          "timerSw", /* name */
-//          pdMS_TO_TICKS(1000), /* period/time */
-//          pdTRUE, /* auto reload */
-//          (void*)0, /* timer ID */
-//          vTimerCallback1SecExpired); /* callback */
-//    if (timerHndl==NULL) {
-//      for(;;); /* failure! */
-//    }
+
     vTaskStartScheduler();
     for (;;)
         ;
