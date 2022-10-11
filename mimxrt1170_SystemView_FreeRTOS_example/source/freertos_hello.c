@@ -54,7 +54,7 @@ int main(void)
     BOARD_InitPins();
     BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
-    SEGGER_UART_init(500000);
+    SEGGER_UART_init(2, 500000, kCLOCK_Root_Lpuart2);
     SEGGER_SYSVIEW_Conf();
 
     /*
@@ -129,4 +129,8 @@ static void task1_handler(void* parameters)
 		taskYIELD();
 	}
 
+}
+/* Need to add call for SEGGER UART interrupt handler */
+void LPUART2_IRQHandler(void){
+	SEGGER_UARTX_IRQHandler();
 }

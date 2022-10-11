@@ -81,8 +81,7 @@ Additional information:
 extern void SEGGER_UARTX_IRQHandler(void);
 extern void HIF_UART_EnableTXEInterrupt  (void);
 #define SEGGER_SYSVIEW_ON_EVENT_RECORDED(x)  HIF_UART_EnableTXEInterrupt()
-
-void SEGGER_UART_init(U32 baud);
+void SEGGER_UART_init(U32 instanceNum, U32 baudrate, U32 rootClkLpuart);
 
 
 #endif  // SEGGER_SYSVIEW_CONF_H

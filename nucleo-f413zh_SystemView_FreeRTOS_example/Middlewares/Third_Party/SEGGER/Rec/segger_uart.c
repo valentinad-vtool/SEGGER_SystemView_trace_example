@@ -10,7 +10,10 @@ Purpose : Terminal control for Flasher using USART1 on PA9/PA10
 #include "SEGGER_SYSVIEW.h"
 #include "SEGGER_RTT.h"
 
-UART_HandleTypeDef huartSegger;
+/* Adjust priority of SEGEGR UART interrupt routine to match your FreeRTOSConfig.h file */
+#define SEGGER_UART_PRIORITY_LEVEL 6
+
+static UART_HandleTypeDef seggerUart;
 
 typedef void UART_ON_RX_FUNC(uint8_t Data);
 typedef int  UART_ON_TX_FUNC(uint8_t* pChar);
@@ -88,8 +91,8 @@ void HIF_UART_WaitForTxEnd(void) {
   //
   // Wait until transmission has finished (e.g. before changing baudrate).
   //
-  while ((READ_REG(huartSegger.Instance->SR) & USART_SR_TXE) == 0);  // Wait until transmit buffer empty (Last byte shift from data to shift register)
-  while ((READ_REG(huartSegger.Instance->SR) & USART_SR_TC) == 0);   // Wait until transmission is complete
+  while ((READ_REG(seggerUart.Instance->SR) & USART_SR_TXE) == 0);  // Wait until transmit buffer empty (Last byte shift from data to shift register)
+  while ((READ_REG(seggerUart.Instance->SR) & USART_SR_TC) == 0);   // Wait until transmission is complete
 }
 
 /*********************************************************************
@@ -109,10 +112,10 @@ void SEGGER_UARTX_IRQHandler(void) {
   uint8_t v;
   int r;
 
-  UsartStatus = READ_REG(huartSegger.Instance->SR);   // Examine status register
+  UsartStatus = READ_REG(seggerUart.Instance->SR);   // Examine status register
   if ((UsartStatus & USART_SR_RXNE) != 0) {            // Data received?
-    v = huartSegger.Instance->DR;                     // Read data
-    if ((UsartStatus & (uint32_t)(USART_SR_PE |
+    v = seggerUart.Instance->DR;                     // Read data
+    if ((UsartStatus & (U32)(USART_SR_PE |
     		USART_SR_FE | USART_SR_ORE | USART_SR_NE)) == 0) {   // Only process data if no error occurred
       (void)v;                                         // Avoid warning in BTL
       if (_cbOnRx) {
@@ -131,10 +134,10 @@ void SEGGER_UARTX_IRQHandler(void) {
     }
     r = _cbOnTx(&v);
     if (r == 0) {                          // No more characters to send ?
-      __HAL_UART_DISABLE_IT(&huartSegger, UART_IT_TXE); // Disable further tx interrupts
+      __HAL_UART_DISABLE_IT(&seggerUart, UART_IT_TXE); // Disable further tx interrupts
     } else {
-      READ_REG(huartSegger.Instance->SR);      // Makes sure that "transmission complete" flag in USART_SR is reset to 0 as soon as we write USART_DR. If USART_SR is not read before, writing USART_DR does not clear "transmission complete". See STM32F4 USART documentation for more detailed description.
-      huartSegger.Instance->DR = v;  // Start transmission by writing to data register
+      READ_REG(seggerUart.Instance->SR);      // Makes sure that "transmission complete" flag in USART_SR is reset to 0 as soon as we write USART_DR. If USART_SR is not read before, writing USART_DR does not clear "transmission complete". See STM32F4 USART documentation for more detailed description.
+      seggerUart.Instance->DR = v;  // Start transmission by writing to data register
     }
   }
 }
@@ -144,7 +147,7 @@ void SEGGER_UARTX_IRQHandler(void) {
 *       HIF_UART_EnableTXEInterrupt()
 */
 void HIF_UART_EnableTXEInterrupt(void) {
-  __HAL_UART_ENABLE_IT(&huartSegger, UART_IT_TXE); // enable Tx empty interrupt => Triggered as soon as data register content has been copied to shift register
+  __HAL_UART_ENABLE_IT(&seggerUart, UART_IT_TXE); // enable Tx empty interrupt => Triggered as soon as data register content has been copied to shift register
 }
 
 
@@ -155,30 +158,30 @@ void HIF_UART_EnableTXEInterrupt(void) {
 */
 void HIF_UART_Init(USART_TypeDef * instance,uint32_t baudrate, uint32_t intNum, UART_ON_TX_FUNC_P cbOnTx, UART_ON_RX_FUNC_P cbOnRx) {
 
-	huartSegger.Instance = instance;
-	huartSegger.Init.BaudRate = baudrate;
-	huartSegger.Init.WordLength = UART_WORDLENGTH_8B;
-	huartSegger.Init.StopBits = UART_STOPBITS_1;
-	huartSegger.Init.Parity = UART_PARITY_NONE;
-	huartSegger.Init.Mode = UART_MODE_TX_RX;
-	huartSegger.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	huartSegger.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huartSegger) != HAL_OK)
-  {
+	seggerUart.Instance = instance;
+	seggerUart.Init.BaudRate = baudrate;
+	seggerUart.Init.WordLength = UART_WORDLENGTH_8B;
+	seggerUart.Init.StopBits = UART_STOPBITS_1;
+	seggerUart.Init.Parity = UART_PARITY_NONE;
+	seggerUart.Init.Mode = UART_MODE_TX_RX;
+	seggerUart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	seggerUart.Init.OverSampling = UART_OVERSAMPLING_16;
+	if (HAL_UART_Init(&seggerUart) != HAL_OK)
+	{
 	  __disable_irq();
-	    while (1)
-	    {
-	    }
-  }
-  //
-  // Setup callbacks which are called by ISR handler and enable interrupt in NVIC
-  //
-  _cbOnRx = cbOnRx;
-  _cbOnTx = cbOnTx;
-  NVIC_SetPriority(intNum, 8);  // Highest prio, so it is not disabled by FreeRTOS
-  __HAL_UART_ENABLE_IT(&huartSegger, UART_IT_RXNE);
-  __HAL_UART_ENABLE_IT(&huartSegger, UART_IT_TXE);
-  NVIC_EnableIRQ(intNum); //USART2_IRQn
+		while (1)
+		{
+		}
+	}
+	//
+	// Setup callbacks which are called by ISR handler and enable interrupt in NVIC
+	//
+	_cbOnRx = cbOnRx;
+	_cbOnTx = cbOnTx;
+	NVIC_SetPriority(intNum, SEGGER_UART_PRIORITY_LEVEL);  // Highest prio, so it is not disabled by FreeRTOS
+	__HAL_UART_ENABLE_IT(&seggerUart, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&seggerUart, UART_IT_TXE);
+	NVIC_EnableIRQ(intNum); //USARTX_IRQn
 }
 
 
