@@ -35,28 +35,33 @@ in my case. Copy this patch file in directory where are "include" and  "portable
  and for which platform you are using FreeRTOS(patch only for used platform!). You can, also, compare to this example files that are patched and 
  carefully copy parts that are missing in you FreeRTOS library.		
  11. Run the system with newly added trace capabilities and verify if everything is working well as before. If you have some errors, you need to 
- do corrections in your code and find out what is wrong.		   
- 12. This is the time where we can add uart_segger.c file into our project! Copy from mine example project uart_segger.c file into newly created 
+ do corrections in your code and find out what is wrong.
+ 
+ 12. IMPORTANT! Recuirements for other steps: Uart clock and pins that you want to use for SEGGER recording data needs to be enabled and confgured!
+ Test your uart if it is working correctly before you apply next steps. Also, if you have some errors, you need to adjust uart_segger.c file
+ to fit your platform specifications!
+  		   
+ 13. This is the time where we can add uart_segger.c file into our project! Copy from mine example project uart_segger.c file into newly created 
  "Rec" directory. Chose uart_segger.c file for proper platform(currently it is available for ST microcontrollers and NXP MCU).
- 13. In directory /root_of_FreeRTOS_and_SEGGER/SEGGER/Config open file SEGGER_SYSVIEW_Conf.h. In this file you have to:
+ 14. In directory /root_of_FreeRTOS_and_SEGGER/SEGGER/Config open file SEGGER_SYSVIEW_Conf.h. In this file you have to:
   		1. Add include for currently used device of your project(in my case it is #include "stm32f4xx.h" or #include "MIMXRT1176_cm7.h")
   		2. Add this part of the code for defining and exporting some functions:
 				extern void SEGGER_UARTX_IRQHandler(void);
 				extern void HIF_UART_EnableTXEInterrupt  (void);
 				#define SEGGER_SYSVIEW_ON_EVENT_RECORDED(x)  HIF_UART_EnableTXEInterrupt()
 				void SEGGER_UART_init(USART_TypeDef * instance, U32 baud, U32 intNum);
-14.Call this two functions(arguments passed are for example perpose, you need to adjust it to your needs):
+15.Call this two functions(arguments passed are for example perpose, you need to adjust it to your needs):
   		SEGGER_UART_init(USART2,500000,USART2_IRQn);
   		SEGGER_SYSVIEW_Conf();
 First function pass USART2 instance for initialization, baud rate of 500000 and interrupt number(adjust arguments to match your needs). 
 Second function initialize and configure SEGGER SV for use. 
-15. Used interrupt for Uart handle needs to be defined to call this SEGGER_UARTX_IRQHandler() function. This is example of how can be done with USART2 instance
+16. Used interrupt for Uart handle needs to be defined to call this SEGGER_UARTX_IRQHandler() function. This is example of how can be done with USART2 instance
 in main.c or in some other place like stm32xxxx_it.c file:
 	void USART2_IRQHandler(void)
 	{
 		SEGGER_UARTX_IRQHandler();
 	}
-16. After those functions, add specific functions for ARM Cortex-M cores that are enabling DWT(Data Watchpoint and Trace) capabilities and execution cycle
+17. After those functions, add specific functions for ARM Cortex-M cores that are enabling DWT(Data Watchpoint and Trace) capabilities and execution cycle
 counting. SystemView events timestamps are calculated using this counter mechanism by default. If you want to use your own counter you have to implement 
 SEGGER_SYSVIEW_X_GetTimestamp(). This is what you have to do in main.c:
 		1. Add defines:
@@ -68,7 +73,7 @@ SEGGER_SYSVIEW_X_GetTimestamp(). This is what you have to do in main.c:
 		  	ARM_CM_DEMCR      |= 1 << 24;  // Set bit 24(TRCENA)
   			ARM_CM_DWT_CYCCNT  = 0;
   			ARM_CM_DWT_CTRL   |= 1 << 0;   // Set bit 0
-17. Build and run the system in debug mode. Connect used SystemView Uart to your PC by USB to TTL hardware. Run SystemView application on host(
+18. Build and run the system in debug mode. Connect used SystemView Uart to your PC by USB to TTL hardware. Run SystemView application on host(
 on linux, run the application from terminal calling: $sudo systemview). When you open SV, click continue button. In the above tab click Target->Recorder Configuration.
 Set you recorder to UART and baud rate to match with your running project(500000bps in current case). Click Target->Start Recording button once and stop immediately.
 Start again recording and you should see your events collected via UART interface to your SV application. 
