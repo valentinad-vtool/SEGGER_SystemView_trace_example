@@ -23,6 +23,7 @@ Check this site and see how steps for FreeRTOS and SEGGER should look like:[Free
    2. On windows, use git tool or patch manually 
 
   *Troubleshooting*: If you cannot patch FreeRTOS, you have to manually add functions for tracing FreeRTOS library. Just keep watch on tasks.c file and for which platform you are using FreeRTOS(**Patch only for used platform**). You can, also, compare in this project files that are patched and carefully copy parts that are missing in you FreeRTOS library.
+
 10. Run the system with newly added trace capabilities. Verify if everything is working well as before. If you have some errors, you need to do corrections in your code and find out what is wrong.
  
 **IMPORTANT!** Recuirements for other steps: Uart clock and pins that you want to use for SEGGER recording data needs to be enabled and configured! Test your uart if it is working correctly before you apply next steps. Also, if you have some errors, you need to adjust *uart_segger.c* file to fit your platform and hardware specifications!
@@ -54,13 +55,13 @@ Second function initialize and configure SEGGER SV for use.
 ```
 Also, this interrupt is used in current project. If you decide to change uart handle you have to change name of interrupt routine that will call SEGGER_UARTX_IRQHandler() function.
 15. After SEGGER_UART_init() and SEGGER_SYSVIEW_Conf() functions called in main.c file, add specific functions for ARM Cortex-M cores that are enabling DWT(Data Watchpoint and Trace) capabilities and execution cycle counting. SystemView events timestamps are calculated using this counter mechanism by default. If you want to use your own counter you have to implement SEGGER_SYSVIEW_X_GetTimestamp(). This is what you have to do in main.c:
-1. Add defines:
+   1. Add defines:
 ```
 			#define  ARM_CM_DEMCR      (*(uint32_t *)0xE000EDFC) // Debug Exception and Monitor Control Register
 			#define  ARM_CM_DWT_CTRL   (*(uint32_t *)0xE0001000) // DWT Control Register
 			#define  ARM_CM_DWT_CYCCNT (*(uint32_t *)0xE0001004) // DWT Current PC Sampler Cycle Count Register
 ```
-2. Add this lines after you called SEGGER_SYSVIEW_Conf() function:
+   2. Add this lines after you called SEGGER_SYSVIEW_Conf() function:
 ```
 		  	ARM_CM_DEMCR      |= 1 << 24;  // Set bit 24(TRCENA)
   			ARM_CM_DWT_CYCCNT  = 0;
