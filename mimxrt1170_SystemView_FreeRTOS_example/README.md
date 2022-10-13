@@ -9,17 +9,18 @@ Check this site and see how steps for FreeRTOS and SEGGER should look like:[Free
 5. Add/extract directories called *"Config"*, *"Sample"* and *"SEGGER"* from downloaded zip file, and everything what is in them, in your *"/root_of_FreeRTOS_and_SEGGER/SEGGER/"* directory path.
 6. Go to extracted directory *"Sample"*. Find which version of FreeRTOS you used in your application on MCU and ***leave only*** that one subdirectory in *"Sample"* directory( in my case it was directory called FreeRTOSV10, because I had version of FreeRTOS installed v10.3.0(for NXP), so I left only that directory and deleted others).
 7. Check again [FreeRTOS with SystemView](https://wiki.segger.com/FreeRTOS_with_SystemView#System_Configuration), part of *System Configuration*. You have to include SEGGER directories paths in your project. Right click on project name and click "Properties". *Go to C/C++ Build->Settings->Tool Settings->Includes*. Include these paths in your project:
-   i. /root_of_FreeRTOS_and_SEGGER/SEGGER/Config
-   ii. /root_of_FreeRTOS_and_SEGGER/SEGGER/Sample
-   iii. /root_of_FreeRTOS_and_SEGGER/SEGGER/Sample/FreeRTOSV10 (this is in my case, in yours can be different!)
-   iiii. /root_of_FreeRTOS_and_SEGGER/SEGGER/SEGGER
+
+   1. /root_of_FreeRTOS_and_SEGGER/SEGGER/Config
+   2. /root_of_FreeRTOS_and_SEGGER/SEGGER/Sample
+   3. /root_of_FreeRTOS_and_SEGGER/SEGGER/Sample/FreeRTOSV10 (this is in my case, in yours can be different!)
+   4. /root_of_FreeRTOS_and_SEGGER/SEGGER/SEGGER
 
 *Note*: root_of_FreeRTOS_and_SEGGER is path to directory level where you have put FreeRTOS and SEGGER libraries. 
 
 8. At the end of FreeRTOSConfig.h, add line: #include "SEGGER_SYSVIEW_FreeRTOS.h" (I put it  before macro __NVIC_PRIO_BITS).
 9. Apply *patch* for FreeRTOS got in SEGGER SystemView library. Patch is on path root_of_FreeRTOS_and_SEGGER/Sample/Patch/ and inside is a FreeRTOSV10_Core.patch file, in my case. Copy this patch file in directory where are *"include"* and  *"portable"* directories of FreeRTOS library. Follow according step:
-   i. On linux use command patch ```-p1 -r . < FreeRTOSV10_Core.patch``` 
-   ii. On windows, use git tool or patch manually 
+   1. On linux use command patch ```-p1 -r . < FreeRTOSV10_Core.patch``` 
+   2. On windows, use git tool or patch manually 
 
   *Troubleshooting*: If you cannot patch FreeRTOS, you have to manually add functions for tracing FreeRTOS library. Just keep watch on tasks.c file and for which platform you are using FreeRTOS(**Patch only for used platform**). You can, also, compare in this project files that are patched and carefully copy parts that are missing in you FreeRTOS library.
 10. Run the system with newly added trace capabilities. Verify if everything is working well as before. If you have some errors, you need to do corrections in your code and find out what is wrong.
@@ -28,8 +29,8 @@ Check this site and see how steps for FreeRTOS and SEGGER should look like:[Free
   		   
 11. Create "Rec" directory on */root_of_FreeRTOS_and_SEGGER/SEGGER/* path. Copy from mine example project uart_segger.c file into newly created "Rec" directory.
 12. In directory */root_of_FreeRTOS_and_SEGGER/SEGGER/Config* open file *SEGGER_SYSVIEW_Conf.h*. In this file you have to:
-   i. Add include for currently used device of your project(in my case it is #include "MIMXRT1176_cm7.h")
-   ii. Add this part of the code for defining and exporting some functions:
+   1. Add include for currently used device of your project(in my case it is #include "MIMXRT1176_cm7.h")
+   2. Add this part of the code for defining and exporting some functions:
 ```
 			extern void SEGGER_UARTX_IRQHandler(void);
 			extern void HIF_UART_EnableTXEInterrupt  (void);
