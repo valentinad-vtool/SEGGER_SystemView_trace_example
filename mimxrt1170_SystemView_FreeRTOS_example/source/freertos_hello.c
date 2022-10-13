@@ -64,20 +64,16 @@ int main(void)
      *  The following code is all that is needed to enable and initialize this highly useful feature.
      */
     // enable DWT(Debug Watch and Trace) module
-    //if (ARM_CM_DWT_CTRL != 0) {        // See if DWT is available
+	/*
+	 * Global enable for all DWT and ITM features:
+	 * 		0 = DWT and ITM blocks disabled.
+	 * 		1 = DWT and ITM blocks enabled.
+	 */
+	ARM_CM_DEMCR      |= 1 << 24;  // Set bit 24(TRCENA)
 
-    	/*
-    	 * Global enable for all DWT and ITM features:
-    	 * 		0 = DWT and ITM blocks disabled.
-    	 * 		1 = DWT and ITM blocks enabled.
-    	 */
-        ARM_CM_DEMCR      |= 1 << 24;  // Set bit 24(TRCENA)
+	ARM_CM_DWT_CYCCNT  = 0;
 
-        ARM_CM_DWT_CYCCNT  = 0;
-
-        ARM_CM_DWT_CTRL   |= 1 << 0;   // Set bit 0
-
-    //}
+	ARM_CM_DWT_CTRL   |= 1 << 0;   // Set bit 0
 
     if (xTaskCreate(task1_handler, "task 1", configMINIMAL_STACK_SIZE + 100, "Hello world from Task-1", hello_task_PRIORITY, &task1_handle) !=
         pdPASS)

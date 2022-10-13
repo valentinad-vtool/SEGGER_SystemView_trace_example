@@ -179,35 +179,35 @@ void HIF_UART_EnableTXEInterrupt(void) {
 */
 void HIF_UART_Init(U32 instanceNum, U32 baudrate, U32 rootClkLpuart, UART_ON_TX_FUNC_P cbOnTx, UART_ON_RX_FUNC_P cbOnRx) {
 
+	lpuart_config_t config;
+	seggerUart = seggerLpuartBases[instanceNum];
+	/*
+	* config.baudRate_Bps = 115200U;
+	* config.parityMode = kLPUART_ParityDisabled;
+	* config.stopBitCount = kLPUART_OneStopBit;
+	* config.txFifoWatermark = 0;
+	* config.rxFifoWatermark = 0;
+	* config.enableTx = false;
+	* config.enableRx = false;
+	*/
+	LPUART_GetDefaultConfig(&config);
+	config.baudRate_Bps = baudrate;
+	config.enableTx     = true;
+	config.enableRx     = true;
 
-  lpuart_config_t config;
-  seggerUart = seggerLpuartBases[instanceNum];
-  /*
-   * config.baudRate_Bps = 115200U;
-   * config.parityMode = kLPUART_ParityDisabled;
-   * config.stopBitCount = kLPUART_OneStopBit;
-   * config.txFifoWatermark = 0;
-   * config.rxFifoWatermark = 0;
-   * config.enableTx = false;
-   * config.enableRx = false;
-   */
-  LPUART_GetDefaultConfig(&config);
-  config.baudRate_Bps = baudrate;
-  config.enableTx     = true;
-  config.enableRx     = true;
+	LPUART_Init(seggerUart, &config, CLOCK_GetRootClockFreq(rootClkLpuart));
 
-  LPUART_Init(seggerUart, &config, CLOCK_GetRootClockFreq(rootClkLpuart));
+	//
+	// Setup callbacks which are called by ISR handler and enable interrupt in NVIC
+	//
+	_cbOnRx = cbOnRx;
+	_cbOnTx = cbOnTx;
+	NVIC_SetPriority(seggerUartIRQ[instanceNum], SEGGER_UART_PRIORITY_LEVEL);  // Highest priority, so it is not interrupted by FreeRTOS
+	/* Enable TX&RX interrupt. */
+	LPUART_EnableInterrupts(seggerUart, kLPUART_TxDataRegEmptyInterruptEnable);
+	LPUART_EnableInterrupts(seggerUart, kLPUART_RxDataRegFullInterruptEnable);
+	NVIC_EnableIRQ(seggerUartIRQ[instanceNum]);
 
-  //
-  // Setup callbacks which are called by ISR handler and enable interrupt in NVIC
-  //
-  _cbOnRx = cbOnRx;
-  _cbOnTx = cbOnTx;
-  NVIC_SetPriority(seggerUartIRQ[instanceNum], SEGGER_UART_PRIORITY_LEVEL);  // Highest priority, so it is not interrupted by FreeRTOS
-  /* Enable TX&RX interrupt. */
-  LPUART_EnableInterrupts(seggerUart, kLPUART_TxDataRegEmptyInterruptEnable);
-  LPUART_EnableInterrupts(seggerUart, kLPUART_RxDataRegFullInterruptEnable);
-  NVIC_EnableIRQ(seggerUartIRQ[instanceNum]);
 }
 
 

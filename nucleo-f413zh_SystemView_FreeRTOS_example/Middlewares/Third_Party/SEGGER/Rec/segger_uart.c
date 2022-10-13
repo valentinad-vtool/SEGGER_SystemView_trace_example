@@ -169,9 +169,7 @@ void HIF_UART_Init(USART_TypeDef * instance,uint32_t baudrate, uint32_t intNum, 
 	if (HAL_UART_Init(&seggerUart) != HAL_OK)
 	{
 	  __disable_irq();
-		while (1)
-		{
-		}
+	  return;
 	}
 	//
 	// Setup callbacks which are called by ISR handler and enable interrupt in NVIC
