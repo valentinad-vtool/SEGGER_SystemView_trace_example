@@ -10,10 +10,10 @@ Check this site and see how steps for FreeRTOS and SEGGER should look like:[Free
 6. Go to extracted directory *"Sample"*. Find which version of FreeRTOS you used in your application on MCU and ***leave only*** that one subdirectory in *"Sample"* directory( in my case it was directory called FreeRTOSV10, because I had version of FreeRTOS installed v10.3.0(for NXP), so I left only that directory and deleted others).
 7. Check again [FreeRTOS with SystemView](https://wiki.segger.com/FreeRTOS_with_SystemView#System_Configuration), part of *System Configuration*. You have to include SEGGER directories paths in your project. Right click on project name and click "Properties". *Go to C/C++ Build->Settings->Tool Settings->Includes*. Include these paths in your project:
 
-    1. /root_of_FreeRTOS_and_SEGGER/SEGGER/Config
-    2. /root_of_FreeRTOS_and_SEGGER/SEGGER/Sample
-    3. /root_of_FreeRTOS_and_SEGGER/SEGGER/Sample/FreeRTOSV10 (this is in my case, in yours can be different!)
-    4. /root_of_FreeRTOS_and_SEGGER/SEGGER/SEGGER
+i. /root_of_FreeRTOS_and_SEGGER/SEGGER/Config
+ii. /root_of_FreeRTOS_and_SEGGER/SEGGER/Sample
+iii. /root_of_FreeRTOS_and_SEGGER/SEGGER/Sample/FreeRTOSV10 (this is in my case, in yours can be different!)
+iiii. /root_of_FreeRTOS_and_SEGGER/SEGGER/SEGGER
 
 *Note*: root_of_FreeRTOS_and_SEGGER is path to directory level where you have put FreeRTOS and SEGGER libraries. 
 
