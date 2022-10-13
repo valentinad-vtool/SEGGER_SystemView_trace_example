@@ -46,6 +46,7 @@ Check this site and see how steps for FreeRTOS and SEGGER should look like:[Free
 Arguments passed in SEGGER_UART_init() function are from current project, you need to adjust it to your needs.
 First argument is number of used Uart instance(in current project is 2), baud rate of 500000 and root clock of used Uart instace(again,*adjust arguments to match your needs*). 
 Second function initialize and configure SEGGER SV for use. 
+
 14. Used interrupt for Uart handle needs to be defined to call this SEGGER_UARTX_IRQHandler() function. This is example of how can be done with Uart 2 instance: in main.c, or in some other place, add:
 ```
 			void LPUART2_IRQHandler(void)
@@ -54,6 +55,7 @@ Second function initialize and configure SEGGER SV for use.
 			}
 ```
 Also, this interrupt is used in current project. If you decide to change uart handle you have to change name of interrupt routine that will call SEGGER_UARTX_IRQHandler() function.
+
 15. After SEGGER_UART_init() and SEGGER_SYSVIEW_Conf() functions called in main.c file, add specific functions for ARM Cortex-M cores that are enabling DWT(Data Watchpoint and Trace) capabilities and execution cycle counting. SystemView events timestamps are calculated using this counter mechanism by default. If you want to use your own counter you have to implement SEGGER_SYSVIEW_X_GetTimestamp(). This is what you have to do in main.c:
    1. Add defines:
 ```
