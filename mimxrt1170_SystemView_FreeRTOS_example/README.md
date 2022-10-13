@@ -30,9 +30,10 @@ Check this site and see how steps for FreeRTOS and SEGGER should look like:[Free
   		   
 11. Create "Rec" directory on */root_of_FreeRTOS_and_SEGGER/SEGGER/* path. Copy from mine example project uart_segger.c file into newly created "Rec" directory.
 12. In directory */root_of_FreeRTOS_and_SEGGER/SEGGER/Config* open file *SEGGER_SYSVIEW_Conf.h*. In this file you have to:
-   
-   1. Add include for currently used device of your project(in my case it is #include "MIMXRT1176_cm7.h")
-   2. Add this part of the code for defining and exporting some functions:
+
+      1. Add include for currently used device of your project(in my case it is #include "MIMXRT1176_cm7.h")
+      2. Add this part of the code for defining and exporting some functions:
+
 ```
 			extern void SEGGER_UARTX_IRQHandler(void);
 			extern void HIF_UART_EnableTXEInterrupt  (void);
