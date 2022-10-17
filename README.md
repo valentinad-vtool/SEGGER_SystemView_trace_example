@@ -3,7 +3,7 @@ Currently available examples for NXP mimxrt1170 evaluation board and ST nucleo-f
 
 ## Running examples:
 1. Clone git repository *SEGGER_SystemView_trace_example*
-2. Load example project in used IDE of your chose(I used NXP MCUXpresso IDE and for ST microcontrollers STM32CubeIDE). This can be done in IDE by clicking on *File->Import->Project from Folder or Archive*.
+2. Load example project in used IDE of your choice(I used NXP MCUXpresso IDE and for ST microcontrollers STM32CubeIDE). This can be done in IDE by clicking on *File->Import->Project from Folder or Archive*.
 3. Build project and run it in debug mode.
 
 ## Steps to configure SEGGER SystemView recording capabilities for other boards:
