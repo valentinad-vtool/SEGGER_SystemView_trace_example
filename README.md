@@ -1,5 +1,5 @@
 # SEGGER SystemView recording examples repository
-Currently available examples for NXP MIMXrt1170 evaluation board and ST nucleo-f413zh board.
+Currently available examples for NXP mimxrt1170 evaluation board and ST nucleo-f413zh board.
 
 ## Running examples:
 1. Clone git repository *SEGGER_SystemView_trace_example*
